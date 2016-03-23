@@ -40,6 +40,7 @@ typedef map<string, vector<string> > Dataset;
 
 #include <Classifier.h>
 #include <NearestNeighbor.h>
+#include <EigenFood.h>
 
 // Figure out a list of files in a given directory.
 //
@@ -78,7 +79,9 @@ int main(int argc, char **argv)
     // set up the classifier based on the requested algo
     Classifier *classifier=0;
     if(algo == "nn")
-      classifier = new NearestNeighbor(class_list);
+    	classifier = new NearestNeighbor(class_list);
+    else if(algo == "eigenfood")
+    	classifier = new EigenFood(class_list);
     else
       throw std::string("unknown classifier " + algo);
 
@@ -94,11 +97,3 @@ int main(int argc, char **argv)
     cerr << "Error: " << err << endl;
   }
 }
-
-
-
-
-
-
-
-
