@@ -80,8 +80,14 @@ int main(int argc, char **argv)
     Classifier *classifier=0;
     if(algo == "nn")
     	classifier = new NearestNeighbor(class_list);
-    else if(algo == "eigenfood")
-    	classifier = new EigenFood(class_list);
+    else if(algo == "eigen")
+        	classifier = new EigenFood(class_list);
+    else if(algo == "haar")
+        	classifier = new EigenFood(class_list);
+    else if(algo == "bow")
+        	classifier = new EigenFood(class_list);
+    else if(algo == "deep")
+            classifier = new EigenFood(class_list);
     else
       throw std::string("unknown classifier " + algo);
 
