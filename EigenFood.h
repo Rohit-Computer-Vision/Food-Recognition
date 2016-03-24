@@ -10,9 +10,9 @@ public:
     for(Dataset::const_iterator c_iter=filenames.begin(); c_iter != filenames.end(); ++c_iter)
       {
 	cout << endl << "Processing " << c_iter->first << endl;
-	double cols = size*size*3;
-	double rows = filenames.size();
-	cout << endl << "cols=" << cols << ", rows=" << rows << endl;
+	int cols = size*size*3;
+	int rows = filenames.size();
+//	cout << endl << "cols=" << cols << ", rows=" << rows << endl;
 
 	CImg<double> class_vectors(cols, rows, 1);
 	
@@ -48,9 +48,41 @@ public:
 	//covariance
 	CImg<double> covariance = class_vectors_normalized * class_vectors_normalized_transpose / rows;
 //	covariance.save_png(("eigenfood_covariance_" + c_iter->first + ".png").c_str());
+//	cout << endl<< "rows=" << covariance._height << ", cols=" << covariance._width << endl;
 
-//	CImg<double> eigen_val(2,2), eigen_vec(2,2);
-//	cout << endl << "eigen: " << covariance.eigen(eigen_val, eigen_vec) << endl;
+	CImg<> U,S,V;
+	covariance.SVD(U,S,V);
+
+//	cout << "S: ";
+//	for(int r=0; r<25; r++)
+//		cout << S(0,r,0,0) << " ";
+//	cout << endl;
+
+	CImg<> eigenvectors(10,25,1);
+	int select_rows = 10;
+	for(int i = 0; i < select_rows; i++)
+		for(int j = 0; j < rows; j++)
+			eigenvectors(i,j,0,0) = U(i,j,0,0);
+
+//	cout << "eigenvectors: " << eigenvectors._height << "x" << eigenvectors._width << endl;
+//	cout << "class_vectors: " << class_vectors._height << "x" << class_vectors._width  << endl;
+	CImg<> class_vectors_from_eigen = transpose(eigenvectors) * class_vectors;
+//							10x1200	  =	  25x10    *    25x1200
+	cout << "class_vectors_from_eigen: " << class_vectors_from_eigen._height << "x" << class_vectors_from_eigen._width << endl;
+
+	CImg<> test = avg_vector;
+	for(int i = 0; i < cols; i++){
+		test(i,0,0,0) += class_vectors_from_eigen(i,0,0,0);
+		cout << i << endl;
+		cout << "test : " << test(i,0,0,0) << endl;
+		cout << "avg  : " << avg_vector(i,0,0,0) << endl;
+		cout << "class: " << class_vectors_from_eigen(i,0,0,0) << endl;
+		cout << endl;
+	}
+
+//	test.save_png(("test_" + c_iter->first + ".png").c_str());
+
+
       }
   }
 
