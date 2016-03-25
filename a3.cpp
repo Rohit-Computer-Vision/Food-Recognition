@@ -41,6 +41,7 @@ typedef map<string, vector<string> > Dataset;
 #include <Classifier.h>
 #include <NearestNeighbor.h>
 #include <EigenFood.h>
+#include <DeepFeatures.h>
 
 // Figure out a list of files in a given directory.
 //
@@ -87,7 +88,7 @@ int main(int argc, char **argv)
     else if(algo == "bow")
         	classifier = new EigenFood(class_list);
     else if(algo == "deep")
-            classifier = new EigenFood(class_list);
+            classifier = new DeepFeatures(class_list);
     else
       throw std::string("unknown classifier " + algo);
 
