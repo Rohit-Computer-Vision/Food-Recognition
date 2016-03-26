@@ -40,6 +40,7 @@ typedef map<string, vector<string> > Dataset;
 
 #include <Classifier.h>
 #include <NearestNeighbor.h>
+#include <svm.h>
 #include <EigenFood.h>
 #include <DeepFeatures.h>
 
@@ -81,6 +82,8 @@ int main(int argc, char **argv)
     Classifier *classifier=0;
     if(algo == "nn")
     	classifier = new NearestNeighbor(class_list);
+    else if(algo == "baseline")
+            	classifier = new svm(class_list);
     else if(algo == "eigen")
         	classifier = new EigenFood(class_list);
     else if(algo == "haar")
