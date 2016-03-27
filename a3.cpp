@@ -44,6 +44,7 @@ typedef map<string, vector<string> > Dataset;
 #include <EigenFood.h>
 #include <DeepFeatures.h>
 #include <HaarLike.h>
+#include <BagofWords.h>
 
 // Figure out a list of files in a given directory.
 //
@@ -89,6 +90,8 @@ int main(int argc, char **argv)
         	classifier = new EigenFood(class_list);
     else if(algo == "haar")
         	classifier = new HaarLike(class_list);
+	else if(algo == "sift")
+        	classifier = new BagofWords(class_list);
     else if(algo == "bow")
         	classifier = new EigenFood(class_list);
     else if(algo == "deep")
