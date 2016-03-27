@@ -21,7 +21,11 @@ public:
 	for(Dataset::const_iterator c_iter=filenames.begin(); c_iter != filenames.end(); ++c_iter)
 		folders[count++] = c_iter->first;
 
-    for(Dataset::const_iterator c_iter=filenames.begin(); c_iter != filenames.end(); ++c_iter)
+	string filename, command;
+	int start, len;
+
+	//creating models
+	for(Dataset::const_iterator c_iter=filenames.begin(); c_iter != filenames.end(); ++c_iter)
       {
 	cout << "Processing " << c_iter->first << endl;
 	CImg<double> class_vectors(size*size*3, filenames.size(), 1);
@@ -29,24 +33,26 @@ public:
 	// convert each image to be a row of this "model" image
 	for(int i=0; i<c_iter->second.size(); i++)
 	  class_vectors = class_vectors.draw_image(0, i, 0, 0, extract_features(c_iter->second[i].c_str()));
-	
-	//creating models
-	string filename, command;
-	int start, len;
-//	for(int i=0; i<c_iter->second.size(); i++){
-//		start = 7+c_iter->first.length();
-//		len = c_iter->second[i].length()-start-4;
-//		filename = "deep_model_" + c_iter->first + "_" + c_iter->second[i].substr(start,len)+".txt";
-//		cout << filename << endl;
-//		freopen(filename.c_str(),"w",stdout);
-//		command = "./overfeat/bin/linux_64/overfeat -L 12 " + c_iter->second[i];
-//		system(command.c_str());
-//		fclose(stdout);
-//		freopen("/dev/tty", "a", stdout);
-//	}
-//	cout << endl;
 
-	//modifying models for svm
+	for(int i=0; i<c_iter->second.size(); i++){
+		start = 7+c_iter->first.length();
+		len = c_iter->second[i].length()-start-4;
+		filename = "deep_model_" + c_iter->first + "_" + c_iter->second[i].substr(start,len)+".txt";
+		cout << filename << endl;
+		freopen(filename.c_str(),"w",stdout);
+		command = "./overfeat/bin/linux_64/overfeat -L 12 " + c_iter->second[i];
+		system(command.c_str());
+		fclose(stdout);
+		freopen("/dev/tty", "a", stdout);
+	}
+	cout << endl;
+      }
+
+    //modifying models for svm
+    for(Dataset::const_iterator c_iter=filenames.begin(); c_iter != filenames.end(); ++c_iter)
+      {
+
+
 	ifstream myReadFile;
 	ofstream myWriteFile;
 	int no_of_features, feature_height, feature_width, next, feature_no = 1, image_no = 0;
@@ -83,6 +89,7 @@ public:
 				for(int skip = 0; skip < next; skip++)
 					myReadFile >> output;
 			}
+			//write the filename at the end of the line
 			myWriteFile << ' ' << '#' << ' ' << c_iter->second[file_no] << '\n';
 		}
 		myReadFile.close();
