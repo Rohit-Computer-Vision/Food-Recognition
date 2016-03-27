@@ -1,5 +1,5 @@
 #include<fstream>
-
+using namespace std;
 class svm : public Classifier
 {
 public:
@@ -10,13 +10,15 @@ public:
   // them to a common size, convert to greyscale, and dump them as vectors to a file
   virtual void train(const Dataset &filenames) 
   {
+  	//cout<<filenames<<endl;
     myfile.open ("dat.txt");
     int p=0;
     for(Dataset::const_iterator c_iter=filenames.begin(); c_iter != filenames.end(); ++c_iter)
       {
-        
-	cout << "Processing " << c_iter->first << endl;
-	CImg<double> class_vectors(40*40*3, filenames.size(), 1);
+
+        p=p+1;
+		cout << "Processing " << c_iter->first << endl;
+		CImg<double> class_vectors(40*40*3, filenames.size(), 1);
 	
 	// convert each image to be a row of this "model" image
 	for(int i=0; i<c_iter->second.size(); i++){
@@ -25,7 +27,6 @@ public:
 		int actual_size = class_vectors.width() * class_vectors.height();
 		//cout<<actual_size<<endl;
 	        int k=0;
-		p=p+1;
         	myfile << p << " ";
 		for( int j = 0; j < actual_size; j++){
 			k=k+1;
@@ -37,34 +38,44 @@ public:
 	
       }
 	myfile.close();
+  
+  system(" ./svm_multiclass_learn -c 1.0 dat.txt");
   }
-  //system(" ./svm_multiclass_learn -c 1.0 dat.txt");
 
-  virtual string classify(const string &filename)
-  {
-  	 ofstream myfile;
-     myfile.open ("testing.txt");
-     CImg<double> test_image = extract_features(filename);
-     cout<<filename<<endl;
-     for(int i=0; i<filename.size(); i++){
-     	test_image=extract_features(filename[i]);
-        myfile<< test_image;
-     }
-	      
-    // figure nearest neighbor
- //    pair<string, double> best("", 10e100);
- //    double this_cost;
- //    for(int c=0; c<class_list.size(); c++)
- //    	cout<<"Hello"<<endl;
- //      for(int row=0; row<models[ class_list[c] ].height(); row++)
- //      	//cout<<models[ class_list[c] ].height()<<endl;
-	// if((this_cost = (test_image - models[ class_list[c] ].get_row(row)).magnitude()) < best.second)
-	//   best = make_pair(class_list[c], this_cost);
+int dir_count=1;
+int count = 1;
 
-    //return best.first;
-     return filename;
-	
+virtual string classify(const string &filename)
+{	
+
+	ofstream myfile;
+	myfile.open("testing.txt");
+	CImg<double> test_image = extract_features(filename);
+  	if (count == 11){
+  		dir_count++;
+  		count = 1;
+  		myfile << dir_count<<" ";
+  	}
+  	else{
+  		myfile << dir_count<<" ";
+  		count++;
     }
+     
+    
+	for( int j = 0; j < test_image.size(); j++)
+			myfile << j+1 << ":"<< test_image[j] << " " ;
+	
+	myfile <<"\n";
+	myfile.close();
+    system("./svm_multiclass_classify testing.txt svm_struct_model");
+	
+    std::ifstream input("svm_predictions");
+    int x;
+    input>>x;
+    // cout<<x;
+    return class_list[x-1];
+	
+}
 
 
   virtual void load_model()
