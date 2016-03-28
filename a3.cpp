@@ -90,10 +90,8 @@ int main(int argc, char **argv)
         	classifier = new EigenFood(class_list);
     else if(algo == "haar")
         	classifier = new HaarLike(class_list);
-	else if(algo == "sift")
-        	classifier = new BagofWords(class_list);
     else if(algo == "bow")
-        	classifier = new NearestNeighbor(class_list);
+        	classifier = new BagofWords(class_list);
     else if(algo == "deep")
             classifier = new DeepFeatures(class_list);
     else
