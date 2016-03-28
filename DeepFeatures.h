@@ -7,8 +7,7 @@ class DeepFeatures : public Classifier
 public:
   DeepFeatures(const vector<string> &_class_list) : Classifier(_class_list) {}
   
-  // Nearest neighbor training. All this does is read in all the images, resize
-  // them to a common size, convert to greyscale, and dump them as vectors to a file
+  // Neural Network training
   virtual void train(const Dataset &filenames) 
   {
 	//to delete older model files
@@ -98,7 +97,7 @@ public:
       }
     //deleting unnecessary model files
 //    string del = "rm -f deep_model_*_.txt";
-//	system(del.c_str());
+//	  system(del.c_str());
   }
 
   virtual string classify(const string &filename)
@@ -119,7 +118,7 @@ public:
   virtual void load_model()
   {
     for(int c=0; c < class_list.size(); c++)
-      models[class_list[c] ] = (CImg<double>(("deep_model_" + class_list[c] + ".txt").c_str()));
+      models[class_list[c] ] = (CImg<double>("deep_model_svm.txt"));
   }
 protected:
   // extract features from an image, which in this case just involves resampling and 
