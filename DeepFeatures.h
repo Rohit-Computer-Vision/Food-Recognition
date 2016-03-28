@@ -6,6 +6,8 @@ class DeepFeatures : public Classifier
 {
 public:
   DeepFeatures(const vector<string> &_class_list) : Classifier(_class_list) {}
+  int dir_count=1;
+  int count = 1;
   
   // Neural Network training
   virtual void train(const Dataset &filenames) 
@@ -33,6 +35,8 @@ public:
 	for(int i=0; i<c_iter->second.size(); i++)
 	  class_vectors = class_vectors.draw_image(0, i, 0, 0, extract_features(c_iter->second[i].c_str()));
 
+/* This is the overfeat training part. I've run this and saved the models to the main folder.
+ * Without this block of code, training is only converting the model to svm format
 	for(int i=0; i<c_iter->second.size(); i++){
 		start = 7+c_iter->first.length();
 		len = c_iter->second[i].length()-start-4;
@@ -45,6 +49,7 @@ public:
 		freopen("/dev/tty", "a", stdout);
 	}
 	cout << endl;
+*/
       }
 
     //modifying models for svm
@@ -102,23 +107,46 @@ public:
 
   virtual string classify(const string &filename)
   {
-    CImg<double> test_image = extract_features(filename);
-	      
-    // figure nearest neighbor
+    //svm
+	CImg<double> test_image = extract_features(filename);
     pair<string, double> best("", 10e100);
     double this_cost;
     for(int c=0; c<class_list.size(); c++)
       for(int row=0; row<models[ class_list[c] ].height(); row++)
 	if((this_cost = (test_image - models[ class_list[c] ].get_row(row)).magnitude()) < best.second)
 	  best = make_pair(class_list[c], this_cost);
-
     return best.first;
+
+    //nearest neighbor
+    /*ofstream myfile;
+	myfile.open("testing.txt");
+	CImg<double> test_image = extract_features(filename);
+	if (count == 11){
+		dir_count++;
+		count = 1;
+		myfile << dir_count<<" ";
+	}
+	else{
+		myfile << dir_count<<" ";
+		count++;
+	}
+	for( int j = 0; j < test_image.size(); j++)
+		myfile << j+1 << ":"<< test_image[j] << " " ;
+	myfile <<'\n';
+	myfile.close();
+	system("./svm_multiclass_classify testing.txt svm_struct_model");
+	fstream myfile_input("svm_predictions", std::ios_base::in);
+	int x;
+	myfile_input>>x;
+	myfile_input.close();
+	return class_list[x-1];*/
   }
 
   virtual void load_model()
   {
     for(int c=0; c < class_list.size(); c++)
-      models[class_list[c] ] = (CImg<double>("deep_model_svm.txt"));
+    	models[class_list[c] ] = (CImg<double>("deep_model_svm.txt"));
+//    	models[class_list[c] ] = (CImg<double>(("deep_model_" + class_list[c] + ".txt").c_str()));
   }
 protected:
   // extract features from an image, which in this case just involves resampling and 
