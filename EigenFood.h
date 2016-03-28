@@ -32,7 +32,6 @@ public:
 			sum += class_vectors(c,r,0,0);
 		}
 		avg_vector(c,0,0,0) = sum/rows;
-//		cout << endl << "col " << c << ": sum = " << sum << ", avg = " << sum/rows;
 	}
 
 	//calculating normalized image vectors
@@ -42,21 +41,12 @@ public:
 			class_vectors_normalized(c,r,0,0) = class_vectors(c,r,0,0) - avg_vector(c,0,0,0);
 		cout << endl;
 
-	//find transpose of of normalized class vectors
-//	CImg<double> class_vectors_normalized_transpose = transpose(class_vectors_normalized);
-
 	//covariance
 	CImg<double> covariance = class_vectors_normalized * transpose(class_vectors_normalized);// / rows;
-//	cout << endl<< "rows=" << covariance._height << ", cols=" << covariance._width << endl;
 
 	CImg<> U,S,V;
 	covariance.symmetric_eigen(S, U);
 //	covariance.SVD(U,S,V);
-
-//	print eigen values U
-//	cout << "U: "; for(int r=0; r<25; r++) for(int c=0; c<25; c++) cout << U(r,c,0,0) << " "; cout << endl;
-//	print eigen values S
-	cout << "S: "; for(int r=0; r<25; r++) cout << S(0,r,0,0) << " "; cout << endl;
 
 	//select 10 best eigenvectors
 	CImg<> eigenvectors(10,25,1);
@@ -78,6 +68,7 @@ public:
 //		printeigenvectors.save_png(("printeigenvectors_" + k + ".png").c_str());
 	}
 
+	//Checking correctness ... whether U * U.T = I
 //	CImg<> identity = U * transpose(U);
 //	cout << "U.UT:\n";
 //	for(int r=0; r<25; r++){
@@ -86,17 +77,12 @@ public:
 //			cout << (int)identity(r,c,0,0) << " ";
 //		cout << endl;
 //	}
-//	cout << endl;
 
+	//testing --> printing a single eigenvector as an image
 //	CImg<> test = avg_vector;
-//	for(int i = 0; i < cols; i++){
+//	for(int i = 0; i < cols; i++)
 //		test(i,0,0,0) += class_vectors_from_eigen(i,0,0,0);
-//		cout << i << endl;
-//		cout << "test : " << test(i,0,0,0) << endl;
-//		cout << "avg  : " << avg_vector(i,0,0,0) << endl;
-//		cout << "class: " << class_vectors_from_eigen(i,0,0,0) << endl;
-//		cout << endl;
-//	}
+//	test.save_png("test.png".c_str());
 
 	class_vectors_from_eigen.save_png(("eigenfood_model_" + c_iter->first + ".png").c_str());
       }
