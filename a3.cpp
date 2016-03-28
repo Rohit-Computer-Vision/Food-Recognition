@@ -29,6 +29,8 @@
 #include <dirent.h>
 #include <map>
 #include <numeric>
+#include <fstream>
+#include <sstream>
 
 //Use the cimg namespace to access the functions easily
 using namespace cimg_library;
