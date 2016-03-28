@@ -6,6 +6,8 @@ class EigenFood : public Classifier
 {
 public:
   EigenFood(const vector<string> &_class_list) : Classifier(_class_list) {}
+  int dir_count=1;
+  int count = 1;
 
   // EigenFood training. All this does is read in all the images, resize
   // them to a common size, convert to greyscale, and dump them as vectors to a file
@@ -39,7 +41,6 @@ public:
 	for(int c=0; c<cols; c++)
 		for(int r=0; r<rows; r++)
 			class_vectors_normalized(c,r,0,0) = class_vectors(c,r,0,0) - avg_vector(c,0,0,0);
-		cout << endl;
 
 	//covariance
 	CImg<double> covariance = class_vectors_normalized * transpose(class_vectors_normalized);// / rows;
@@ -90,17 +91,39 @@ public:
 
   virtual string classify(const string &filename)
   {
-    CImg<double> test_image = extract_features(filename);
+	  //svm
+	  	CImg<double> test_image = extract_features(filename);
+	      pair<string, double> best("", 10e100);
+	      double this_cost;
+	      for(int c=0; c<class_list.size(); c++)
+	        for(int row=0; row<models[ class_list[c] ].height(); row++)
+	  	if((this_cost = (test_image - models[ class_list[c] ].get_row(row)).magnitude()) < best.second)
+	  	  best = make_pair(class_list[c], this_cost);
+	      return best.first;
 
-    // figure nearest neighbor
-    pair<string, double> best("", 10e100);
-    double this_cost;
-    for(int c=0; c<class_list.size(); c++)
-      for(int row=0; row<models[ class_list[c] ].height(); row++)
-	if((this_cost = (test_image - models[ class_list[c] ].get_row(row)).magnitude()) < best.second)
-	  best = make_pair(class_list[c], this_cost);
-
-    return best.first;
+	      //nearest neighbor
+	      /*ofstream myfile;
+	  	myfile.open("testing.txt");
+	  	CImg<double> test_image = extract_features(filename);
+	  	if (count == 11){
+	  		dir_count++;
+	  		count = 1;
+	  		myfile << dir_count<<" ";
+	  	}
+	  	else{
+	  		myfile << dir_count<<" ";
+	  		count++;
+	  	}
+	  	for( int j = 0; j < test_image.size(); j++)
+	  		myfile << j+1 << ":"<< test_image[j] << " " ;
+	  	myfile <<'\n';
+	  	myfile.close();
+	  	system("./svm_multiclass_classify testing.txt svm_struct_model");
+	  	fstream myfile_input("svm_predictions", std::ios_base::in);
+	  	int x;
+	  	myfile_input>>x;
+	  	myfile_input.close();
+	  	return class_list[x-1];*/
   }
 
   virtual void load_model()
